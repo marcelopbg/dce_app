@@ -1,18 +1,8 @@
 <template>
   <div id="content">
     <div id="topBar">
-<!--       <div style="float:left;margin-left:2%;">OAB/SP 418.342</div>
- -->      <div id="topIcons">
-        <a href="">
-        <img src="./img/fb.png" class=" m-2" style="width:30px;">
-        </a>
-        <a href="">
-        <img src="./img/wpp.png" class=" m-2" style="width:30px;">
-        </a>
-        OAB/SP 418.342
-      </div>
-      <img src="./img/LOGO.png" class="img-fluid" id="logo">
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Sistema de Repografia - DCE</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -25,13 +15,20 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div class="navbar-nav mx-auto">
-            <router-link :class="bindLinkClass('/')" to="/">Escritório</router-link>
-            <router-link :class="bindLinkClass('/areasdeatuacao')" to="/areasdeatuacao">Área de Atuação</router-link>
-            <router-link :class="bindLinkClass('/links')" to="/links">Links Úteis</router-link>
-            <router-link :class="bindLinkClass('/equipe')" to="/equipe">Atualizações jurídicas</router-link>
-          </div>
+          <ul class="navbar-nav mr-auto" v-if="admin===true">
+            <router-link :class="bindLinkClass('/historico')" to="/historico">Impressões</router-link>
+            <router-link
+              :class="bindLinkClass('/usuarios')"
+              to="/usuarios"
+            >Usuários</router-link>
+<!--             <router-link :class="bindLinkClass('/links')" to="/links">Links Úteis</router-link>
+            <router-link :class="bindLinkClass('/equipe')" to="/equipe">Atualizações jurídicas</router-link> -->
+          </ul>
+          <div v-if="admin===true" class="my-2 my-lg-0">
+      <button class="btn btn-outline-danger my-2 my-sm-0" v-on:click="logoff()" >Logout </button>
+     </div>
         </div>
+            
       </nav>
     </div>
     <div class="container-fluid mt-5" id="mainContent">
@@ -41,42 +38,57 @@
 </template>
 
 <script>
-
 export default {
   name: "App",
   components: {},
-  methods: {
-    bindLinkClass(value) {
-      if(value==this.$route.path) {
-      return 'nav-item nav-link active'
+  watch: {
+    '$route' (to, from) {      
+      if(!from.path)
+ {
+   this.$router.push('/login')
+ }      // react to route changes...
+      if(to.path=='/login') {
+        this.admin=false
       }else {
-      return 'nav-item nav-link'
+        this.admin=true
       }
       
     }
   },
+  methods: {
+    bindLinkClass(value) {
+      if (value == this.$route.path) {
+        return "nav-item nav-link active";
+      } else {
+        return "nav-item nav-link";
+      }
+    },
+    mountContent() {
+      
+      if(localStorage.getItem('token')) {
+        this.admin=true;
+        this.$router.push('historico')
+      }else { this.$router.push('/login')
+      }
+    },
+    logoff() {
+      localStorage.removeItem('token');
+      this.$router.push('/login')
+    }
+  },
   data() {
     return {
+      admin: false,
       //
     };
   },
-  mounted() {},
+  mounted() {
+    this.mountContent();
+  }
 };
 </script>
 <style>
-#topIcons {
-  margin-right: 5%;
-  text-align: right;
-}
-#topBar {
-  text-align: center;
-}
-#logo {
-  height: 130px;
-}
-#mainContent {
-}
-nav {
-  margin-top: 1%;
+body {
+  font-family: "Nunito", sans-serif;
 }
 </style>

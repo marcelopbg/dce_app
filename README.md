@@ -1,4 +1,4 @@
-# akytem-cms
+# dce-app
 
 ## Project setup
 ```
